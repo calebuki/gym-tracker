@@ -1,19 +1,37 @@
-#include <iostream>
-#include <string>
+#include "exercise.h"
+#include <vector>
 
+class Split
+{
+protected:
+    std::vector<Exercise *> exercises;
 
-struct Exercise {
-    std::string name;
-    int reps; 
-    int sets;
+public:
+    virtual void selectExercises() = 0;
+    virtual void displayExercises() const = 0;
+    virtual ~Split();
 };
 
-class Split {
+// Push day derived class
+class Push : public Split
+{
+public:
+    void selectExercises() override;
+    void displayExercises() const override;
+};
 
-    public:
+// Pull day derived class
+class Pull : public Split
+{
+public:
+    void selectExercises() override;
+    void displayExercises() const override;
+};
 
-    
-
-    private:
-
+// Legs day derived class
+class Legs : public Split
+{
+public:
+    void selectExercises() override;
+    void displayExercises() const override;
 };
