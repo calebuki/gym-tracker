@@ -1,71 +1,77 @@
 #include <iostream>
-#include <vector>
-#include <string>
+#include <limits>
 #include "split.h"
 
 int main()
 {
-    int choice = 0;
-    std::string intensity;
     bool proceed = true;
-
     Split *workoutDay = nullptr;
 
-    std::cout << "Welcome to the Workout Plan Creator!" << std::endl;
+    std::cout << "Welcome to the Workout Plan Creator!\n";
 
     while (proceed)
     {
+        int choice;
+        std::cout << "Select workout split:" << std::endl;
+        std::cout << " 1. Push" << std::endl;
+        std::cout << " 2. Pull" << std::endl;
+        std::cout << " 3. Legs" << std::endl;
+        std::cout << " 4. Exit" << std::endl;
+        std::cout << "Enter choice (1‑4): ";
 
-        // menu screen
-        std::cout << "Select workout split:\n";
-        std::cout << "1. Push\n";
-        std::cout << "2. Pull (Not implemented)\n";
-        std::cout << "3. Legs+ (Not implemented)\n";
-        std::cout << "Enter choice (1-3): ";
+        /* ---------- single, guarded read ---------- */
+        if (!(std::cin >> choice))
+        {                     // non‑numeric input
+            std::cin.clear(); // reset failbit
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Please enter a number.\n";
+            continue; // restart loop
+        }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // flush newline
 
-        // select corresponding workout split:
+        /* ---------- create the requested split ---------- */
         switch (choice)
         {
         case 1:
             workoutDay = new Push();
-            workoutDay->selectExercises();
             break;
         case 2:
             workoutDay = new Pull();
-            workoutDay->selectExercises();
             break;
         case 3:
             workoutDay = new Legs();
-            workoutDay->selectExercises();
             break;
         case 4:
-            std::cout << "Goodbye!" << std::endl;
+            std::cout << "Goodbye!\n";
             proceed = false;
-            break;
+            continue;
         default:
-            std::cout << "Invalid choice!" << std::endl;
+            std::cout << "Invalid choice!\n";
             continue;
         }
 
-        if (workoutDay != nullptr)
-        {
-            workoutDay->displayExercises();
+        workoutDay->selectExercises();
+        workoutDay->displayExercises();
 
-            // ask if they want to make another workout plan
-            std::cout << "Do you want to create another workout? (y/n)" << std::endl;
-            char input;
-            std::cin >> input;
-            if (input != 'y' && input != 'Y')
+        /* ---------- ask to repeat ---------- */
+        char again{};
+        std::cout << "Create another workout? (y/n): ";
+        while (true)
+        {
+            std::cin >> again;
+            if (again == 'y' || again == 'Y')
+                break; // keep looping
+            if (again == 'n' || again == 'N')
             {
                 proceed = false;
+                break;
             }
-
-            // clear heap
-            delete workoutDay;
-            workoutDay = nullptr;
+            std::cout << "Please enter y or n: ";
         }
-    }
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-    // end of program
+        delete workoutDay;
+        workoutDay = nullptr;
+    }
     return 0;
 }
